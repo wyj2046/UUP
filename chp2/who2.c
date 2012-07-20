@@ -2,10 +2,18 @@
 #include <utmp.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <time.h>
 
 #define SHOWHOST
 
-show_info( struct utmp* utbufp )
+void showtime( long timeval )
+  {
+    char* cp = ctime( &timeval );
+    printf( "%12.12s", cp + 4 );
+    
+  }
+
+void show_info( struct utmp* utbufp )
 {
   if ( utbufp->ut_type != USER_PROCESS )
     return;
@@ -14,12 +22,12 @@ show_info( struct utmp* utbufp )
   printf( " " );
   printf( "%-8.8s", utbufp->ut_line );
   printf( " " );
-  printf( "%10ld", utbufp->ut_time );
-    
-  printf( " " );
-
+  showtime( utbufp->ut_time );
+  
   #ifdef SHOWHOST
-  printf( "(%s )", utbufp->ut_host );
+  if ( utbufp->ut_host[ 0 ] != '\0' )
+    printf( "(%s)", utbufp->ut_host );
+  
   #endif
   printf( "\n" );
   
